@@ -28,8 +28,6 @@ class ServiceInterface:NSObject, NSURLSessionDelegate{
     var successMethod:Selector!
     var failureMethod:Selector!
     
-    let appDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
-    
     var theResponseData:NSMutableData!
     
     func startWithURL(url:NSURL) {
@@ -110,32 +108,16 @@ class ServiceInterface:NSObject, NSURLSessionDelegate{
                     self.theDelegate .performSelector(self.failureMethod, withObject: errorObj)
                 }else {
                     NSLog("\n\nResponse failed!!!!\(error)")
-                    self.appDelegate.hideActivity()
                 }
             })
         }else {
             let response = task.response as! NSHTTPURLResponse
             NSLog("Response Header Fields:%@\n\nerror: %d\nError:%@\nURL:%@",response.allHeaderFields, response.statusCode, NSHTTPURLResponse.localizedStringForStatusCode(response.statusCode), response.URL!);
-//            if (response.statusCode >= 200) && (response.statusCode < 300) {
             dispatch_async(dispatch_get_main_queue(), { () -> Void in
                 if(self.theDelegate .respondsToSelector(self.successMethod)){
                     self.theDelegate .performSelector(self.successMethod, withObject: self.theResponseData)
-                }else {
-                    self.appDelegate.hideActivity()
                 }
             })
-            
-//            }else {
-//                if(theDelegate .respondsToSelector(failureMethod)){
-//                    let errorObj:ServiceError! = ServiceError()
-//                    errorObj.description = response.description
-//                    errorObj.debugDescription = response.debugDescription
-//                    errorObj.errorCode = response.statusCode
-//                    theDelegate .performSelector(failureMethod, withObject: errorObj)
-//                }else {
-//                    appDelegate.hideActivity()
-//                }
-//            }
         }
     }
 }
